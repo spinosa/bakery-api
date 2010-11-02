@@ -48,12 +48,14 @@ module Bakery
     end
     
     # options
+    # :delivery_url_root -- override the default delivery_url_root set in config
     # :id
     # :format
     def self.authenticated_url_for(options)
       raise ArgumentError, 'Must provide id' unless id = options.delete(:id)
       format = options.delete(:format) || 'bin'
       
+      delivery_host = options.delete(:delivery_url_root) || Bakery::Configuration.delivery_url_root
       path = "/medias/#{id}.#{format}"
 
       expires = options.delete(:expires) || 15.minutes.from_now.to_i
@@ -64,7 +66,7 @@ module Bakery
         :signature => signature
       )
       
-      "#{Bakery::Configuration.delivery_url_root}#{path}?#{options.to_query}"
+      "#{delivery_host}#{path}?#{options.to_query}"
     end
         
   end
